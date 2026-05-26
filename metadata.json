@@ -1,0 +1,6 @@
+{
+  "name": "DIDS Bolt Signal",
+  "description": "Premium OTC trading signals and predictive analytics engine with administrative command consoles and local database synchronization.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
