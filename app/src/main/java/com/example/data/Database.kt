@@ -2,6 +2,7 @@ package com.example.data
 
 import androidx.room.*
 import kotlinx.coroutines.flow.Flow
+import kotlinx.serialization.Serializable
 
 // --- ENTITIES ---
 
@@ -42,6 +43,7 @@ data class SystemConfigEntity(
     val value: String
 )
 
+@Serializable
 @Entity(tableName = "signal_history")
 data class SignalHistoryEntity(
     @PrimaryKey(autoGenerate = true) val id: Int = 0,

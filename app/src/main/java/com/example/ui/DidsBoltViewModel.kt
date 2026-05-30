@@ -44,7 +44,7 @@ class DidsBoltViewModel(private val repository: AppRepository) : ViewModel() {
     val pricingPlans: StateFlow<List<PricePlanEntity>> = repository.pricingPlans
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
 
-    val signalHistory: StateFlow<List<SignalHistoryEntity>> = repository.signalHistory
+    val signalHistory: StateFlow<List<SignalHistoryEntity>> = repository.listenToLiveSignals()
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
 
     val announcement: StateFlow<SystemConfigEntity?> = repository.getAnnouncementFlow()

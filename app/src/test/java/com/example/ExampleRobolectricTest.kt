@@ -18,4 +18,12 @@ class ExampleRobolectricTest {
     val appName = context.getString(R.string.app_name)
     assertEquals("DIDS Bolt Signal", appName)
   }
+
+  @Test
+  fun `launch MainActivity`() {
+    val controller = org.robolectric.Robolectric.buildActivity(MainActivity::class.java)
+    controller.setup()
+    val activity = controller.get()
+    org.junit.Assert.assertNotNull(activity)
+  }
 }

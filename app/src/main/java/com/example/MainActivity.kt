@@ -15,6 +15,13 @@ import com.example.ui.theme.MyApplicationTheme
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
+        // Set up universal uncaught exception tracing for robust diagnostics
+        val defaultHandler = Thread.getDefaultUncaughtExceptionHandler()
+        Thread.setDefaultUncaughtExceptionHandler { thread, throwable ->
+            android.util.Log.e("CRITICAL_CRASH", "FATAL EXCEPTION ON THREAD: ${thread.name}", throwable)
+            defaultHandler?.uncaughtException(thread, throwable)
+        }
+
         super.onCreate(savedInstanceState)
 
         // Enable edge-to-edge safety drawing (Safe Drawing/Safe Insets)
@@ -29,7 +36,7 @@ class MainActivity : ComponentActivity() {
             .build()
         
         val appDao = db.appDao()
-        val repository = AppRepository(appDao)
+        val repository = AppRepository(appDao, MyApplication.supabaseClient)
         val viewModelFactory = ViewModelFactory(repository)
 
         // Retrieve ViewModel instance bound to MainActivity lifecycles
