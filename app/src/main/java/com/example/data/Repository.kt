@@ -2,6 +2,8 @@ package com.example.data
 
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.firstOrNull
+import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.emitAll
 import io.github.jan.supabase.SupabaseClient
 import io.github.jan.supabase.postgrest.postgrest
 import io.github.jan.supabase.realtime.realtime
@@ -125,6 +127,10 @@ class AppRepository(
         return try {
             supabase.postgrest["signal_history"]
                 .selectAsFlow(SignalHistoryEntity::id)
+                .catch { e ->
+                    android.util.Log.e("AppRepository", "Supabase live signals stream connection failed", e)
+                    emitAll(appDao.getAllSignalHistory())
+                }
         } catch (e: Exception) {
             android.util.Log.e("AppRepository", "Supabase listenToLiveSignals failed (falling back to Room flow)", e)
             appDao.getAllSignalHistory()
