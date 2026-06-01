@@ -17,7 +17,7 @@ data class VoucherDto(
 
 class AppRepository(
     private val appDao: AppDao,
-    private val supabase: SupabaseClient
+    private val supabase: SupabaseClient?
 ) {
 
     val users: Flow<List<UserEntity>> = appDao.getAllUsers()
@@ -50,7 +50,7 @@ class AppRepository(
 
     suspend fun insertVoucher(voucher: VoucherEntity) {
         appDao.insertVoucher(voucher)
-        if (!com.example.MyApplication.isSupabaseEnabled) return
+        if (!com.example.MyApplication.isSupabaseEnabled || supabase == null) return
         try {
             val dto = VoucherDto(
                 code = voucher.code,
@@ -68,7 +68,7 @@ class AppRepository(
     }
 
     suspend fun getVoucherByCode(code: String): VoucherEntity? {
-        if (com.example.MyApplication.isSupabaseEnabled) {
+        if (com.example.MyApplication.isSupabaseEnabled && supabase != null) {
             try {
                 val dto = supabase.postgrest["vouchers"]
                     .select {
@@ -108,7 +108,7 @@ class AppRepository(
 
     suspend fun insertSignal(signal: SignalHistoryEntity) {
         appDao.insertSignal(signal)
-        if (!com.example.MyApplication.isSupabaseEnabled) return
+        if (!com.example.MyApplication.isSupabaseEnabled || supabase == null) return
         try {
             supabase.postgrest["signal_history"].insert(signal)
         } catch (e: Exception) {
@@ -119,7 +119,7 @@ class AppRepository(
     // Exposes a database real-time pipeline directly into Flow!
     @OptIn(io.github.jan.supabase.annotations.SupabaseExperimental::class)
     fun listenToLiveSignals(): Flow<List<SignalHistoryEntity>> {
-        if (!com.example.MyApplication.isSupabaseEnabled) {
+        if (!com.example.MyApplication.isSupabaseEnabled || supabase == null) {
             return appDao.getAllSignalHistory()
         }
         return try {

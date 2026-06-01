@@ -9,7 +9,7 @@ import io.github.jan.supabase.realtime.Realtime
 
 class MyApplication : Application() {
     companion object {
-        lateinit var supabaseClient: SupabaseClient
+        var supabaseClient: SupabaseClient? = null
             private set
         var isSupabaseEnabled: Boolean = false
             private set
@@ -26,33 +26,23 @@ class MyApplication : Application() {
         
         isSupabaseEnabled = isUrlValid && isKeyValid
         
-        val finalUrl = if (isUrlValid) url else "https://placeholder-project.supabase.co"
-        val finalKey = if (isKeyValid) key else "placeholder"
-        
-        try {
-            supabaseClient = createSupabaseClient(
-                supabaseUrl = finalUrl,
-                supabaseKey = finalKey
-            ) {
-                install(Postgrest) // Enables database Select/Insert/Update/Delete operations
-                install(Realtime)  // Enables live listening to table change events
-                install(Auth)      // Enables user Auth/Login
-            }
-        } catch (e: Exception) {
-            android.util.Log.e("MyApplication", "Failed to initialize SupabaseClient with URL $finalUrl", e)
+        if (isSupabaseEnabled) {
             try {
-                // Seed a Dummy client to avoid UninitializedPropertyAccessException
                 supabaseClient = createSupabaseClient(
-                    supabaseUrl = "https://placeholder-project.supabase.co",
-                    supabaseKey = "placeholder"
+                    supabaseUrl = url,
+                    supabaseKey = key
                 ) {
-                    install(Postgrest)
-                    install(Realtime)
-                    install(Auth)
+                    install(Postgrest) // Enables database Select/Insert/Update/Delete operations
+                    install(Realtime)  // Enables live listening to table change events
+                    install(Auth)      // Enables user Auth/Login
                 }
-            } catch (ex: Exception) {
-                android.util.Log.e("MyApplication", "Failed to create fallback SupabaseClient", ex)
+            } catch (e: Exception) {
+                android.util.Log.e("MyApplication", "Failed to initialize SupabaseClient with URL $url", e)
+                isSupabaseEnabled = false
+                supabaseClient = null
             }
+        } else {
+            android.util.Log.i("MyApplication", "Supabase integration not enabled. Using local SQLite DB instead.")
         }
     }
 }
