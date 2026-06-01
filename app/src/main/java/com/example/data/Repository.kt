@@ -50,6 +50,7 @@ class AppRepository(
 
     suspend fun insertVoucher(voucher: VoucherEntity) {
         appDao.insertVoucher(voucher)
+        if (!com.example.MyApplication.isSupabaseEnabled) return
         try {
             val dto = VoucherDto(
                 code = voucher.code,
@@ -67,22 +68,24 @@ class AppRepository(
     }
 
     suspend fun getVoucherByCode(code: String): VoucherEntity? {
-        try {
-            val dto = supabase.postgrest["vouchers"]
-                .select {
-                    filter {
-                        eq("code", code)
-                    }
-                }.decodeSingleOrNull<VoucherDto>()
-            if (dto != null) {
-                return VoucherEntity(
-                    code = dto.code,
-                    days = dto.days,
-                    isRedeemed = dto.is_redeemed
-                )
+        if (com.example.MyApplication.isSupabaseEnabled) {
+            try {
+                val dto = supabase.postgrest["vouchers"]
+                    .select {
+                        filter {
+                            eq("code", code)
+                        }
+                    }.decodeSingleOrNull<VoucherDto>()
+                if (dto != null) {
+                    return VoucherEntity(
+                        code = dto.code,
+                        days = dto.days,
+                        isRedeemed = dto.is_redeemed
+                    )
+                }
+            } catch (e: Exception) {
+                android.util.Log.e("AppRepository", "Supabase lookup failed for code $code (falling back to Room DB)", e)
             }
-        } catch (e: Exception) {
-            android.util.Log.e("AppRepository", "Supabase lookup failed for code $code (falling back to Room DB)", e)
         }
         return appDao.getVoucherByCode(code)
     }
@@ -105,6 +108,7 @@ class AppRepository(
 
     suspend fun insertSignal(signal: SignalHistoryEntity) {
         appDao.insertSignal(signal)
+        if (!com.example.MyApplication.isSupabaseEnabled) return
         try {
             supabase.postgrest["signal_history"].insert(signal)
         } catch (e: Exception) {
@@ -115,6 +119,9 @@ class AppRepository(
     // Exposes a database real-time pipeline directly into Flow!
     @OptIn(io.github.jan.supabase.annotations.SupabaseExperimental::class)
     fun listenToLiveSignals(): Flow<List<SignalHistoryEntity>> {
+        if (!com.example.MyApplication.isSupabaseEnabled) {
+            return appDao.getAllSignalHistory()
+        }
         return try {
             supabase.postgrest["signal_history"]
                 .selectAsFlow(SignalHistoryEntity::id)
