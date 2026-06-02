@@ -26,7 +26,8 @@ import {
   Tv,
   CheckCircle,
   XCircle,
-  AlertTriangle
+  AlertTriangle,
+  Sliders
 } from 'lucide-react';
 
 import {
@@ -259,7 +260,7 @@ export default function App() {
       const timeLabel = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
       await insertSignal({
         pair: selectedPair,
-        direction: isUp ? 'CALL' : 'PUT',
+        direction: isUp ? 'CALL' as const : 'PUT' as const,
         result: outcome,
         time: timeLabel,
         timestamp: Date.now()

@@ -1,0 +1,8 @@
+{
+  "name": "dids-bolt-signal-root",
+  "private": true,
+  "version": "1.0.0",
+  "scripts": {
+    "build": "npm install --prefix web && npm --prefix web run build"
+  }
+}
