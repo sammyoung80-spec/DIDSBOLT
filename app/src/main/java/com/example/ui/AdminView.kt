@@ -705,9 +705,15 @@ fun ConfigTabContent(viewModel: DidsBoltViewModel) {
     var announcementText by remember { mutableStateOf("") }
     val announcementState by viewModel.announcement.collectAsState()
 
-    LaunchedEffect(announcementState) {
+    var pocketOptionLinkText by remember { mutableStateOf("") }
+    val pocketOptionLinkState by viewModel.pocketOptionLink.collectAsState()
+
+    LaunchedEffect(announcementState, pocketOptionLinkState) {
         announcementState?.let {
             announcementText = it.value
+        }
+        pocketOptionLinkState?.let {
+            pocketOptionLinkText = it.value
         }
     }
 
@@ -779,6 +785,60 @@ fun ConfigTabContent(viewModel: DidsBoltViewModel) {
                         contentPadding = PaddingValues(0.dp)
                     ) {
                         Text("Save Announcement Banner", color = CyanAccent, fontSize = 11.sp, fontWeight = FontWeight.Bold)
+                    }
+                }
+            }
+        }
+
+        item {
+            Card(
+                modifier = Modifier.fillMaxWidth(),
+                shape = RoundedCornerShape(14.dp),
+                colors = CardDefaults.cardColors(containerColor = Slate900),
+                border = BorderStroke(1.dp, Slate800)
+            ) {
+                Column(
+                    modifier = Modifier.padding(16.dp),
+                    verticalArrangement = Arrangement.spacedBy(12.dp)
+                ) {
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.spacedBy(6.dp)
+                    ) {
+                        Icon(imageVector = Icons.Default.Language, contentDescription = null, tint = CyanAccent, modifier = Modifier.size(16.dp))
+                        Text(text = "Pocket Option Referral URL", color = Slate400, fontSize = 11.sp, fontWeight = FontWeight.Bold)
+                    }
+
+                    OutlinedTextField(
+                        value = pocketOptionLinkText,
+                        onValueChange = { pocketOptionLinkText = it },
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .heightIn(min = 44.dp)
+                            .testTag("admin_po_link_input"),
+                        shape = RoundedCornerShape(10.dp),
+                        colors = OutlinedTextFieldDefaults.colors(
+                            focusedBorderColor = CyanAccent,
+                            unfocusedBorderColor = Slate700,
+                            focusedTextColor = Color.White,
+                            unfocusedTextColor = Color.White,
+                            focusedContainerColor = Slate950,
+                            unfocusedContainerColor = Slate950
+                        )
+                    )
+
+                    Button(
+                        onClick = { viewModel.savePocketOptionLink(pocketOptionLinkText) },
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(36.dp)
+                            .testTag("admin_po_link_save"),
+                        colors = ButtonDefaults.buttonColors(containerColor = Slate950),
+                        border = BorderStroke(1.dp, Slate700),
+                        shape = RoundedCornerShape(10.dp),
+                        contentPadding = PaddingValues(0.dp)
+                    ) {
+                        Text("Save Referral URL", color = CyanAccent, fontSize = 11.sp, fontWeight = FontWeight.Bold)
                     }
                 }
             }

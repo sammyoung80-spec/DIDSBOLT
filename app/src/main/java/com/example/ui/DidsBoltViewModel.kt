@@ -50,6 +50,9 @@ class DidsBoltViewModel(private val repository: AppRepository) : ViewModel() {
     val announcement: StateFlow<SystemConfigEntity?> = repository.getAnnouncementFlow()
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), null)
 
+    val pocketOptionLink: StateFlow<SystemConfigEntity?> = repository.getPocketOptionLinkFlow()
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), null)
+
     // --- SESSION STATE MANAGEMENT WITH COMPOSE GETTERS/SETTERS ---
     var currentUser by mutableStateOf<UserEntity?>(null)
         private set
@@ -451,6 +454,13 @@ class DidsBoltViewModel(private val repository: AppRepository) : ViewModel() {
         viewModelScope.launch {
             repository.setAnnouncementValue(announcementText)
             showToast("Scroll Header announcement updated instantly", ToastType.SUCCESS)
+        }
+    }
+
+    fun savePocketOptionLink(linkText: String) {
+        viewModelScope.launch {
+            repository.setPocketOptionLinkValue(linkText)
+            showToast("Pocket Option referral link updated instantly", ToastType.SUCCESS)
         }
     }
 

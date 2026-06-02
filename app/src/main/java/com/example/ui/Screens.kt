@@ -1162,8 +1162,11 @@ fun DashboardView(viewModel: DidsBoltViewModel) {
                         lineHeight = 15.sp
                     )
 
+                    val poLinkState by viewModel.pocketOptionLink.collectAsState()
+                    val targetLink = poLinkState?.value ?: "https://pocketoption.com/register/"
+
                     Button(
-                        onClick = { uriHandler.openUri("https://pocket-friends.co/r/ebnde3kal4") },
+                        onClick = { uriHandler.openUri(targetLink) },
                         shape = RoundedCornerShape(10.dp),
                         colors = ButtonDefaults.buttonColors(
                             containerColor = DarkBlueAccent.copy(alpha = pulseAlpha)

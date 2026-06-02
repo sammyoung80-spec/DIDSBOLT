@@ -38,6 +38,16 @@ class AppRepository(
         appDao.insertConfig(SystemConfigEntity("announcement", value))
     }
 
+    fun getPocketOptionLinkFlow(): Flow<SystemConfigEntity?> = appDao.getConfigFlow("pocket_option_link")
+
+    suspend fun getPocketOptionLinkValue(): String {
+        return appDao.getConfig("pocket_option_link")?.value ?: "https://pocketoption.com/register/"
+    }
+
+    suspend fun setPocketOptionLinkValue(value: String) {
+        appDao.insertConfig(SystemConfigEntity("pocket_option_link", value.trim()))
+    }
+
     suspend fun getUserByUsername(username: String): UserEntity? {
         return appDao.getUserByUsername(username)
     }
@@ -157,6 +167,7 @@ class AppRepository(
 
             // 2. Seed Announcement Config
             appDao.insertConfig(SystemConfigEntity("announcement", "🚨 LIVE DIDSBOLT TERMINAL SECURE — REDEEM ACCESS CODE TO BEGIN GENERATING AUTOMATED SIGNALS"))
+            appDao.insertConfig(SystemConfigEntity("pocket_option_link", "https://pocketoption.com/register/"))
 
             // 3. Seed Users
             val now = System.currentTimeMillis()
