@@ -85,6 +85,7 @@ class DidsBoltViewModel(private val repository: AppRepository) : ViewModel() {
 
     private var countdownJob: Job? = null
     private var paymentTimerJob: Job? = null
+    private var generateSignalJob: Job? = null
 
     init {
         // Run database initialization and pre-seeding logic
@@ -172,6 +173,8 @@ class DidsBoltViewModel(private val repository: AppRepository) : ViewModel() {
         currentSignal = null
         countdownJob?.cancel()
         countdownJob = null
+        generateSignalJob?.cancel()
+        generateSignalJob = null
     }
 
     fun hasAccess(): Boolean {
@@ -266,8 +269,10 @@ class DidsBoltViewModel(private val repository: AppRepository) : ViewModel() {
         activeSignalState = "analyzing"
         currentSignal = null
         countdownJob?.cancel()
+        countdownJob = null
+        generateSignalJob?.cancel()
 
-        viewModelScope.launch {
+        generateSignalJob = viewModelScope.launch {
             delay(3000)
 
             val isUp = Math.random() > 0.5
@@ -316,6 +321,9 @@ class DidsBoltViewModel(private val repository: AppRepository) : ViewModel() {
         activeSignalState = "idle"
         currentSignal = null
         countdownJob?.cancel()
+        countdownJob = null
+        generateSignalJob?.cancel()
+        generateSignalJob = null
     }
 
     // Translates standard timeframe string to numeric seconds

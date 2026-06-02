@@ -1166,7 +1166,13 @@ fun DashboardView(viewModel: DidsBoltViewModel) {
                     val targetLink = poLinkState?.value ?: "https://pocketoption.com/register/"
 
                     Button(
-                        onClick = { uriHandler.openUri(targetLink) },
+                        onClick = {
+                            try {
+                                uriHandler.openUri(targetLink)
+                            } catch (e: Exception) {
+                                viewModel.showToast("Could not open partner link: browser application not found.", ToastType.ERROR)
+                            }
+                        },
                         shape = RoundedCornerShape(10.dp),
                         colors = ButtonDefaults.buttonColors(
                             containerColor = DarkBlueAccent.copy(alpha = pulseAlpha)
@@ -1335,7 +1341,11 @@ fun PaywallView(viewModel: DidsBoltViewModel) {
                         .fillMaxWidth()
                         .clickable {
                             viewModel.selectPlan(plan)
-                            uriHandler.openUri(TELEGRAM_EXECUTIVE_CHAT)
+                            try {
+                                uriHandler.openUri(TELEGRAM_EXECUTIVE_CHAT)
+                            } catch (e: Exception) {
+                                viewModel.showToast("Could not open Telegram: browser application not found.", ToastType.ERROR)
+                            }
                         }
                         .testTag("price_plan_card_${plan.days}"),
                     shape = RoundedCornerShape(18.dp),
@@ -1741,7 +1751,11 @@ fun SettingsView(viewModel: DidsBoltViewModel) {
                             .border(1.dp, Slate800, RoundedCornerShape(12.dp))
                             .clickable {
                                 viewModel.showToast("Redirecting to Telegram config channels...", ToastType.INFO)
-                                uriHandler.openUri(TELEGRAM_EXECUTIVE_CHAT)
+                                try {
+                                    uriHandler.openUri(TELEGRAM_EXECUTIVE_CHAT)
+                                } catch (e: Exception) {
+                                    viewModel.showToast("Could not open Telegram: browser application not found.", ToastType.ERROR)
+                                }
                             }
                             .padding(14.dp)
                             .testTag("settings_support_trigger"),
